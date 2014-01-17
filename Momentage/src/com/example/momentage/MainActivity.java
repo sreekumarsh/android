@@ -60,6 +60,9 @@ public class MainActivity extends FragmentActivity implements Callback {
 		uiHelper.onCreate(savedInstanceState);
 		uploadBtn = (Button) findViewById(R.id.btnUpload);
 		imageList = (ListView) findViewById(R.id.imgGallery);
+		
+		uploadBtn.setVisibility(View.INVISIBLE);
+		imageList.setVisibility(View.INVISIBLE);
 
 		loginButton = (LoginButton) findViewById(R.id.login_button);
 		loginButton
