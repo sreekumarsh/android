@@ -3,7 +3,6 @@ package com.example.momentage;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,36 +18,37 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 
 public class PostAsyncTask extends AsyncTask<String, String, String> {
 	private HashMap<String, String> mData = null;// post data
 
-	private MainActivity activity;
+	private Callback callBack;
 
 	private int code;
 
 	private ProgressDialog mProgress;
 
+	private Context context;
+
 	/**
 	 * constructor
 	 */
-	public PostAsyncTask(HashMap<String, String> data, MainActivity callback,
-			int code) {
+	public PostAsyncTask(HashMap<String, String> data, Callback callback,
+			Context con, int code) {
 		mData = data;
-		activity = callback;
+		callBack = callback;
 		this.code = code;
-
+		context = con;
 	}
 
-	
 	@Override
 	protected void onPreExecute() {
 		// TODO Auto-generated method stub
 		super.onPreExecute();
 		ShowProgress();
 	}
-
 
 	/**
 	 * background
@@ -89,17 +89,18 @@ public class PostAsyncTask extends AsyncTask<String, String, String> {
 	@Override
 	protected void onPostExecute(String result) {
 		hideProgress();
-		activity.onResponse(result, code);
+		callBack.onResponse(result, code);
 	}
 
 	private void ShowProgress() {
-		mProgress = new ProgressDialog(activity);
+		mProgress = new ProgressDialog(context);
 		mProgress.setCancelable(false);
-		mProgress.setMessage(activity.getString(R.string.loading));
+		mProgress.setMessage(context.getString(R.string.loading));
 		mProgress.show();
 	}
-	private void hideProgress(){
+
+	private void hideProgress() {
 		mProgress.hide();
 	}
-	
+
 }

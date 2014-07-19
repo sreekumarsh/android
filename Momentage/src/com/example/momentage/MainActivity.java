@@ -48,6 +48,7 @@ public class MainActivity extends FragmentActivity implements Callback {
 	private Button uploadBtn;
 	private PendingAction pendingAction = PendingAction.NONE;
 	private ListView imageList;
+
 	private enum PendingAction {
 		NONE, POST_PHOTO, POST_STATUS_UPDATE
 	}
@@ -60,7 +61,7 @@ public class MainActivity extends FragmentActivity implements Callback {
 		uiHelper.onCreate(savedInstanceState);
 		uploadBtn = (Button) findViewById(R.id.btnUpload);
 		imageList = (ListView) findViewById(R.id.imgGallery);
-		
+
 		uploadBtn.setVisibility(View.INVISIBLE);
 		imageList.setVisibility(View.INVISIBLE);
 
@@ -77,10 +78,10 @@ public class MainActivity extends FragmentActivity implements Callback {
 							HashMap<String, String> data = new HashMap<String, String>();
 							data.put(Constants.USERNAME_KEY, user.getUsername());
 							PostAsyncTask getPhotos = new PostAsyncTask(data,
-									MainActivity.this,
+									MainActivity.this, MainActivity.this,
 									Constants.DOWNLOAD_HTTP_CODE);
 							getPhotos.execute(Constants.DOWNLOAD_URL);
-							
+
 						} else {
 							uploadBtn.setVisibility(View.INVISIBLE);
 							imageList.setVisibility(View.INVISIBLE);
@@ -153,7 +154,8 @@ public class MainActivity extends FragmentActivity implements Callback {
 						+ Constants.PHOTO_KEY);
 				params.put(Constants.DATA_KEY, encodedImage);
 				PostAsyncTask getPhotos = new PostAsyncTask(params,
-						MainActivity.this, Constants.UPLOAD_HTTP_CODE);
+						MainActivity.this, MainActivity.this,
+						Constants.UPLOAD_HTTP_CODE);
 				getPhotos.execute(Constants.UPLOAD_URL);
 			}
 
