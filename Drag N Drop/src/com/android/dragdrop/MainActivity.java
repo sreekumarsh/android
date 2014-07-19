@@ -99,20 +99,30 @@ public class MainActivity extends Activity {
     				// TODO Auto-generated method stub
     			}
 
-    			public void onStartDrag(View itemView) {
+    			public void onStartDrag(View itemView, int[] position) {
+    				ExpandableListAdapter adapter = eList.getExpandableListAdapter();
+    				if (adapter instanceof DragNDropAdapter) {
+                		((DragNDropAdapter)adapter).onPick(position);
+                		eList.invalidateViews();
+                	}
+    				
     				itemView.setVisibility(View.INVISIBLE); // make the item invisible as we have picked it 
     				defaultBackgroundColor = itemView.getDrawingCacheBackgroundColor(); // fill the empty space with default color
     				itemView.setBackgroundColor(backgroundColor);
     				ImageView iv = (ImageView)itemView.findViewById(R.id.move_icon_customizer_item);
-    				if (iv != null) iv.setVisibility(View.INVISIBLE);
+    				//if (iv != null) iv.setVisibility(View.INVISIBLE);
     			}
 
     			public void onStopDrag(View itemView) {
-    				itemView.setVisibility(View.VISIBLE);
-    				itemView.setBackgroundColor(defaultBackgroundColor);
-    				ImageView iv = (ImageView)itemView.findViewById(R.id.move_icon_customizer_item);
-    				if (iv != null) iv.setVisibility(View.VISIBLE);
+    				if(itemView != null){
+	    				itemView.setVisibility(View.VISIBLE);
+	    				itemView.setBackgroundColor(defaultBackgroundColor);
+	    				ImageView iv = (ImageView)itemView.findViewById(R.id.move_icon_customizer_item);
+	    				if (iv != null) iv.setVisibility(View.VISIBLE);
+    				}
+    				
     			}
+
         	
         };
     

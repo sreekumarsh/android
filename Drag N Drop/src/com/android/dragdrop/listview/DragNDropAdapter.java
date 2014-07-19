@@ -26,72 +26,85 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
+
 /**
  * Adapter for the drag and drop listview
- * @author <a href="http://sreekumar.sh" >Sreekumar SH </a> (sreekumar.sh@gmail.com)
- *
+ * 
+ * @author <a href="http://sreekumar.sh" >Sreekumar SH </a>
+ *         (sreekumar.sh@gmail.com)
+ * 
  */
-public final class DragNDropAdapter extends BaseExpandableListAdapter implements RemoveListener, DropListener{
+public final class DragNDropAdapter extends BaseExpandableListAdapter implements
+		RemoveListener, DropListener {
 
 	private int[] mIds;
-    private int[] mLayouts;
-    private Context mContext;
-    private LayoutInflater mInflater;
-    private ArrayList<String> groups;
-    private ArrayList<Map<String,String>> children;
+	private int[] mLayouts;
+	private int selectedGroup;
+	private int selectedChild;
+	private Context mContext;
+	private LayoutInflater mInflater;
+	private ArrayList<String> groups;
+	private ArrayList<Map<String, String>> children;
 
-    public DragNDropAdapter(Context context, ArrayList<String> group,ArrayList<Map<String,String>> child) {
-        init(context,new int[]{android.R.layout.simple_list_item_1},new int[]{android.R.id.text1}, group,child);
-    }
-    
-    public DragNDropAdapter(Context context, int[] itemLayouts, int[] itemIDs, ArrayList<String> group,ArrayList<Map<String,String>> child) {
-    	init(context,itemLayouts,itemIDs, group,child);
-    }
+	public DragNDropAdapter(Context context, ArrayList<String> group,
+			ArrayList<Map<String, String>> child) {
+		init(context, new int[] { android.R.layout.simple_list_item_1 },
+				new int[] { android.R.id.text1 }, group, child);
+	}
 
-    private void init(Context context, int[] layouts, int[] ids, ArrayList<String> group,ArrayList<Map<String,String>> child) {
-    	// Cache the LayoutInflate to avoid asking for a new one each time.
-    	mInflater = LayoutInflater.from(context);
-    	mIds = ids;
-    	mLayouts = layouts;
-    	groups = group;
-    	mContext = context;
-    	children = child;
-    	
-    }
-    
+	public DragNDropAdapter(Context context, int[] itemLayouts, int[] itemIDs,
+			ArrayList<String> group, ArrayList<Map<String, String>> child) {
+		init(context, itemLayouts, itemIDs, group, child);
+	}
 
+	private void init(Context context, int[] layouts, int[] ids,
+			ArrayList<String> group, ArrayList<Map<String, String>> child) {
+		// Cache the LayoutInflate to avoid asking for a new one each time.
+		mInflater = LayoutInflater.from(context);
+		mIds = ids;
+		mLayouts = layouts;
+		groups = group;
+		mContext = context;
+		children = child;
 
+	}
 
+	public void onPick(int[] position) {
+		selectedGroup = position[0];
+		selectedChild = position[1];
+	}
 
-    
-    static class ViewHolder {
-        TextView text;
-    }
+	static class ViewHolder {
+		TextView text;
+	}
 
 	public void onRemove(int which[]) {
-		if (which[0] < 0 || which[0] > groups.size() || which[1] < 0 || which[1] > getChildrenCount(which[0])) return;		
+		if (which[0] < 0 || which[0] > groups.size() || which[1] < 0
+				|| which[1] > getChildrenCount(which[0]))
+			return;
 		children.get(which[0]).remove(getKey(which));
 	}
-	
+
 	public void onDrop(int[] from, int[] to) {
-		if(to[0] > children.size() || to[0] < 0 || to[1] < 0  )
-		return;
-		String tValue  = getValue(from);
+		if (to[0] > children.size() || to[0] < 0 || to[1] < 0)
+			return;
+		String tValue = getValue(from);
 		String tKey = getKey(from);
 		children.get(from[0]).remove(tKey);
-		children.get(to[0]).put(tKey,tValue);
+		children.get(to[0]).put(tKey, tValue);
+		selectedGroup = -1;
+		selectedChild = -1;
 		notifyDataSetChanged();
 	}
-	
-	private String getValue(int[] id)
-	{
+
+	private String getValue(int[] id) {
 		return (String) children.get(id[0]).values().toArray()[id[1]];
 	}
-	
-	private String getKey(int[] id)
-	{
+
+	private String getKey(int[] id) {
 		return (String) children.get(id[0]).keySet().toArray()[id[1]];
 	}
+
 	@Override
 	public Object getChild(int groupPosition, int childPosition) {
 		// TODO Auto-generated method stub
@@ -101,44 +114,48 @@ public final class DragNDropAdapter extends BaseExpandableListAdapter implements
 	@Override
 	public long getChildId(int groupPosition, int childPosition) {
 		// TODO Auto-generated method stub
-		 return childPosition;
+		return childPosition;
 	}
 
 	@Override
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
 
-		 ViewHolder holder;
+		ViewHolder holder;
 
-	        // When convertView is not null, we can reuse it directly, there is no need
-	        // to reinflate it. We only inflate a new View when the convertView supplied
-	        // by ListView is null.
-	        if (convertView == null) {
-	            convertView = mInflater.inflate(mLayouts[0], null);
+		// When convertView is not null, we can reuse it directly, there is no
+		// need
+		// to reinflate it. We only inflate a new View when the convertView
+		// supplied
+		// by ListView is null.
+		if (convertView == null) {
+			convertView = mInflater.inflate(mLayouts[0], null);
 
-	            // Creates a ViewHolder and store references to the two children views
-	            // we want to bind data to.
-	            holder = new ViewHolder();
-	            holder.text = (TextView) convertView.findViewById(mIds[0]);
+			// Creates a ViewHolder and store references to the two children
+			// views
+			// we want to bind data to.
+			holder = new ViewHolder();
+			holder.text = (TextView) convertView.findViewById(mIds[0]);
+			convertView.setTag(holder);
+		} else {
+			// Get the ViewHolder back to get fast access to the TextView
+			// and the ImageView.
+			holder = (ViewHolder) convertView.getTag();
+		}
 
-	            convertView.setTag(holder);
-	        } else {
-	            // Get the ViewHolder back to get fast access to the TextView
-	            // and the ImageView.
-	            holder = (ViewHolder) convertView.getTag();
-	        }
-
-	        // Bind the data efficiently with the holder.
-	        holder.text.setText((String) (getChild(groupPosition, childPosition)));
-
-	        return convertView;
+		// Bind the data efficiently with the holder.
+		holder.text.setText((String) (getChild(groupPosition, childPosition)));
+		if (groupPosition != selectedGroup && childPosition != selectedChild) {
+			convertView.setVisibility(View.VISIBLE);
+		}
+		return convertView;
 	}
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
 		// TODO Auto-generated method stub
 		return children.get(groupPosition).size();
-		
+
 	}
 
 	@Override
@@ -165,22 +182,24 @@ public final class DragNDropAdapter extends BaseExpandableListAdapter implements
 		// TODO Auto-generated method stub
 		TextView tv = getGenericView();
 		tv.setText(groups.get(groupPosition));
-		
+
 		return tv;
 	}
-	public TextView getGenericView() {
-        // Layout parameters for the ExpandableListView
-        AbsListView.LayoutParams lp = new AbsListView.LayoutParams(
-                ViewGroup.LayoutParams.FILL_PARENT, 64);
 
-        TextView textView = new TextView(mContext);
-        textView.setLayoutParams(lp);
-        // Center the text vertically
-        textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-        // Set the text starting position
-        textView.setPadding(36, 0, 0, 0);
-        return textView;
-    }
+	public TextView getGenericView() {
+		// Layout parameters for the ExpandableListView
+		AbsListView.LayoutParams lp = new AbsListView.LayoutParams(
+				ViewGroup.LayoutParams.FILL_PARENT, 64);
+
+		TextView textView = new TextView(mContext);
+		textView.setLayoutParams(lp);
+		// Center the text vertically
+		textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
+		// Set the text starting position
+		textView.setPadding(36, 0, 0, 0);
+		return textView;
+	}
+
 	@Override
 	public boolean hasStableIds() {
 		// TODO Auto-generated method stub
