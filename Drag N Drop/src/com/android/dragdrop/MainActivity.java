@@ -24,16 +24,9 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
-import android.widget.ImageView;
 
-import com.android.dragdrop.listview.DragListener;
 import com.android.dragdrop.listview.DragNDropAdapter;
 import com.android.dragdrop.listview.DragNDropListView;
-import com.android.dragdrop.listview.DropListener;
-import com.android.dragdrop.listview.RemoveListener;
 /**
  * Activity that shows the list view
  * @author <a href="http://sreekumar.sh" >Sreekumar SH </a> (sreekumar.sh@gmail.com)
@@ -41,10 +34,8 @@ import com.android.dragdrop.listview.RemoveListener;
  */
 public class MainActivity extends Activity {
 	
-	/**group items*/
-	private ArrayList<String> groups;
-	/**children items with a key and value */
-    private ArrayList<Map<String,String>> children;
+	/**children items with a key and value list */
+    private Map<String, ArrayList<String>> children;
     DragNDropListView eList;
     
     
@@ -55,78 +46,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
         getData();
         eList = (DragNDropListView) findViewById(R.id.list_view_customizer);
-        eList.setAdapter(new DragNDropAdapter(this, new int[]{R.layout.row_item}, new int[]{R.id.txt__customizer_item},  groups, children));
-        
-        if (eList instanceof DragNDropListView) {
-        	((DragNDropListView) eList).setDropListener(mDropListener);
-        	((DragNDropListView) eList).setRemoveListener(mRemoveListener);
-        	((DragNDropListView) eList).setDragListener(mDragListener);
-        }
-        
-        
-        
+        eList.setAdapter(new DragNDropAdapter(this, new int[]{R.layout.row_item}, new int[]{R.id.txt__customizer_item}, children));
     }
-    /**implementing the drop listener*/
-    private DropListener mDropListener = 
-    		new DropListener() {
-            public void onDrop(int[] from, int[] to) {
-            	ExpandableListAdapter adapter = eList.getExpandableListAdapter();
-            	if (adapter instanceof DragNDropAdapter) {
-            		((DragNDropAdapter)adapter).onDrop(from, to); // send the event to adapter and manipulate items in the arraylists
-            		eList.invalidateViews(); //redraw the list view
-            	}
-            }
-        };
-        /**remove item from the list*/
-        private RemoveListener mRemoveListener =
-            new RemoveListener() {
-            public void onRemove(int which[]) {
-            	ExpandableListAdapter adapter = eList.getExpandableListAdapter();
-            	if (adapter instanceof DragNDropAdapter) {
-            		((DragNDropAdapter)adapter).onRemove(which);
-            		eList.invalidateViews();
-            	}
-            }
-        };
-        
-        private DragListener mDragListener =
-        	new DragListener() {
-
-        	int backgroundColor = 0xe0103010; // different color to identify
-        	int defaultBackgroundColor;
-        	
-    			public void onDrag(int x, int y, ExpandableListView listView) {
-    				// TODO Auto-generated method stub
-    			}
-
-    			public void onStartDrag(View itemView, int[] position) {
-    				ExpandableListAdapter adapter = eList.getExpandableListAdapter();
-    				if (adapter instanceof DragNDropAdapter) {
-                		((DragNDropAdapter)adapter).onPick(position);
-                		eList.invalidateViews();
-                	}
-    				
-    				itemView.setVisibility(View.INVISIBLE); // make the item invisible as we have picked it 
-    				defaultBackgroundColor = itemView.getDrawingCacheBackgroundColor(); // fill the empty space with default color
-    				itemView.setBackgroundColor(backgroundColor);
-    				ImageView iv = (ImageView)itemView.findViewById(R.id.move_icon_customizer_item);
-    				//if (iv != null) iv.setVisibility(View.INVISIBLE);
-    			}
-
-    			public void onStopDrag(View itemView) {
-    				if(itemView != null){
-	    				itemView.setVisibility(View.VISIBLE);
-	    				itemView.setBackgroundColor(defaultBackgroundColor);
-	    				ImageView iv = (ImageView)itemView.findViewById(R.id.move_icon_customizer_item);
-	    				if (iv != null) iv.setVisibility(View.VISIBLE);
-    				}
-    				
-    			}
-
-        	
-        };
-    
-    
     
     /**
      * simple function to fill the list
@@ -134,25 +55,27 @@ public class MainActivity extends Activity {
     
     private void getData()
     {
-    	groups = new ArrayList<String>();
-    	children = new ArrayList<Map<String,String>>();
+    	ArrayList<String> groups = new ArrayList<String>();
+    	children = Collections
+				.synchronizedMap(new LinkedHashMap<String, ArrayList<String>>());
         for(int i = 0;i<4 ;i++)
         {
-        	groups.add("group"+i);
+        	groups.add("group "+i);
         	
         }
         for(String s : groups)
         { 
-        	Map<String, String> chList = Collections
-    				.synchronizedMap(new LinkedHashMap<String, String>());
+        	ArrayList<String> child = new ArrayList<String>();
+        	
+        	
         	for(int i = 0;i<4 ;i++)
             {
         		
-        		chList.put(s+"item"+i,s+"value"+i);
+        		child.add(s+" -value"+i);
             	
             	
             }
-        	children.add(chList);
+        	children.put(s, child);
         }
     }
     

@@ -19,16 +19,16 @@ package com.android.dragdrop.listview;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
-import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.Display;
-import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
+
+import com.android.dragdrop.R;
 
 /**
  * Custom ExpandableListView which enables drag and drop
@@ -39,22 +39,20 @@ import android.widget.ImageView;
  */
 public class DragNDropListView extends ExpandableListView {
 
-	boolean mDragMode;
-
-	int[] mStartPosition = new int[2];
-	int[] mEndPosition = new int[2];
-	int[] mMovePosition = new int[2];
-	int mDragPointOffset; // Used to adjust drag view location
-	int mStartFlatPosition;
-	int prevY = -1;
-	float screenHeight;
-	float dragRatio;
-	ImageView mDragView;
-	GestureDetector mGestureDetector;
-
-	DropListener mDropListener;
-	RemoveListener mRemoveListener;
-	DragListener mDragListener;
+	private boolean mDragMode;
+	private boolean limitHorizontalDrag = true;
+	private int[] mStartPosition = new int[2];
+	private int[] mEndPosition = new int[2];
+	private int mDragPointOffset; // Used to adjust drag view location
+	private int mStartFlatPosition;
+	private int prevY = -1;
+	private int backgroundColor = 0xe0103010; // different color to identify
+	private int defaultBackgroundColor;
+	private float screenHeight;
+	private float dragRatio;
+	private ImageView mDragView;
+	private DragNDropAdapter adapter;
+	private DragNDropListeners listeners;
 
 	public DragNDropListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -64,16 +62,8 @@ public class DragNDropListView extends ExpandableListView {
 		screenHeight = display.getWidth();
 	}
 
-	public void setDropListener(DropListener l) {
-		mDropListener = l;
-	}
-
-	public void setRemoveListener(RemoveListener l) {
-		mRemoveListener = l;
-	}
-
-	public void setDragListener(DragListener l) {
-		mDragListener = l;
+	public void setSelectedBackgroud(int color) {
+		backgroundColor = color;
 	}
 
 	@Override
@@ -102,15 +92,16 @@ public class DragNDropListView extends ExpandableListView {
 			mStartFlatPosition = flatPosition;
 			mStartPosition[0] = getPackedPositionGroup(packagedPosition);
 			mStartPosition[1] = getPackedPositionChild(packagedPosition);
-
 			if (packagedPosition != PACKED_POSITION_VALUE_NULL) {
 
 				int mItemPosition = flatPosition - getFirstVisiblePosition();
 				mDragPointOffset = y - getChildAt(mItemPosition).getTop();
 				mDragPointOffset -= ((int) ev.getRawY()) - y;
 				startDrag(mItemPosition, y);
-				
-				drag(x, y);// replace 0 with x if desired
+				if(listeners != null){
+					listeners.onPick(mStartPosition);
+				}
+				drag(x, y);
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:
@@ -121,7 +112,10 @@ public class DragNDropListView extends ExpandableListView {
 			if (getFirstVisiblePosition() > 0 && speed < 0) {
 				smoothScrollBy(speed, 1);
 			}
-			drag(0, y);// replace 0 with x if desired
+			drag(x, y);// replace 0 with x if desired
+			if(listeners != null){
+				listeners.onDrag(x,y);
+			}
 			break;
 		case MotionEvent.ACTION_CANCEL:
 		case MotionEvent.ACTION_UP:
@@ -137,9 +131,15 @@ public class DragNDropListView extends ExpandableListView {
 			}
 
 			stopDrag(mStartFlatPosition);
-			if (mDropListener != null
-					&& packagedPosition != PACKED_POSITION_VALUE_NULL)
-				mDropListener.onDrop(mStartPosition, mEndPosition);
+			if (packagedPosition != PACKED_POSITION_VALUE_NULL) {
+				adapter = (DragNDropAdapter) this.getExpandableListAdapter();
+				if(adapter != null){
+					adapter.onDrop(mStartPosition, mEndPosition);
+				}
+				if(listeners != null){
+					listeners.onDrop(mStartPosition, mEndPosition);
+				}
+			}
 			break;
 		}
 		prevY = y;
@@ -151,15 +151,13 @@ public class DragNDropListView extends ExpandableListView {
 		if (mDragView != null) {
 			WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) mDragView
 					.getLayoutParams();
-			layoutParams.x = x;
+			if (!limitHorizontalDrag) {//no need to move if horizontal drag is limited
+				layoutParams.x = x;
+			}
 			layoutParams.y = y - mDragPointOffset;
 			WindowManager mWindowManager = (WindowManager) getContext()
 					.getSystemService(Context.WINDOW_SERVICE);
 			mWindowManager.updateViewLayout(mDragView, layoutParams);
-
-			if (mDragListener != null)
-				mDragListener.onDrag(x, y, this);// change null to "this" when
-													// ready to use
 		}
 	}
 
@@ -171,15 +169,12 @@ public class DragNDropListView extends ExpandableListView {
 		if (item == null)
 			return;
 		item.setDrawingCacheEnabled(true);
-		int defaultBackgroundColor = item.getDrawingCacheBackgroundColor();
-		if (mDragListener != null)
-			mDragListener.onStartDrag(item, mStartPosition);
+		hideItem(item, mStartPosition);
 
 		// Create a copy of the drawing cache so that it does not get recycled
 		// by the framework when the list tries to clean up memory
 		Bitmap bitmap = Bitmap.createBitmap(item.getDrawingCache());
 		item.setBackgroundColor(defaultBackgroundColor);
-		
 
 		WindowManager.LayoutParams mWindowParams = new WindowManager.LayoutParams();
 		mWindowParams.gravity = Gravity.TOP;
@@ -206,6 +201,32 @@ public class DragNDropListView extends ExpandableListView {
 		mDragView = v;
 	}
 
+	private void hideItem(View itemView, int[] position) {
+		adapter = (DragNDropAdapter) this.getExpandableListAdapter();
+		if(adapter != null){
+			adapter.onPick(position);
+		}
+		itemView.setVisibility(View.INVISIBLE); // make the item invisible as we
+												// have picked it
+		defaultBackgroundColor = itemView.getDrawingCacheBackgroundColor(); 
+		itemView.setBackgroundColor(backgroundColor);
+		ImageView iv = (ImageView) itemView
+				.findViewById(R.id.move_icon_customizer_item);
+		if (iv != null) iv.setVisibility(View.INVISIBLE);
+	}
+
+	public void showItem(View itemView) {
+		if (itemView != null) {
+			itemView.setVisibility(View.VISIBLE);
+			itemView.setBackgroundColor(defaultBackgroundColor);
+			ImageView iv = (ImageView) itemView
+					.findViewById(R.id.move_icon_customizer_item);
+			if (iv != null)
+				iv.setVisibility(View.VISIBLE);
+		}
+
+	}
+
 	/**
 	 * destroy the drag view
 	 * 
@@ -218,10 +239,9 @@ public class DragNDropListView extends ExpandableListView {
 		int wantedChild = itemIndex - firstPosition;
 		if (mDragView != null) {
 			if (wantedChild < 0 || wantedChild >= getChildCount()) {
-				
-			}
-			else if (mDragListener != null){
-				mDragListener.onStopDrag(getChildAt(wantedChild));
+				//no need to do anything
+			} else {
+				showItem(getChildAt(wantedChild));
 			}
 			mDragView.setVisibility(GONE);
 			WindowManager wm = (WindowManager) getContext().getSystemService(
@@ -230,6 +250,35 @@ public class DragNDropListView extends ExpandableListView {
 			mDragView.setImageDrawable(null);
 			mDragView = null;
 		}
+	}
+
+	/**
+	 * @return the limitHorizontalDrag
+	 */
+	public boolean isLimitHorizontalDrag() {
+		return limitHorizontalDrag;
+	}
+
+	/**
+	 * @param limitHorizontalDrag
+	 *            the limitHorizontalDrag to set
+	 */
+	public void setLimitHorizontalDrag(boolean limitHorizontalDrag) {
+		this.limitHorizontalDrag = limitHorizontalDrag;
+	}
+
+	/**
+	 * @return the listeners
+	 */
+	public DragNDropListeners getListeners() {
+		return listeners;
+	}
+
+	/**
+	 * @param listeners the listeners to set
+	 */
+	public void setListeners(DragNDropListeners listeners) {
+		this.listeners = listeners;
 	}
 
 }
