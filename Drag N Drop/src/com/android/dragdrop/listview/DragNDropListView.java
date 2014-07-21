@@ -169,14 +169,12 @@ public class DragNDropListView extends ExpandableListView {
 		View item = getChildAt(itemIndex);
 		if (item == null)
 			return;
-		item.setDrawingCacheEnabled(true);
 		hideItem(item, mStartPosition);
 
 		// Create a copy of the drawing cache so that it does not get recycled
 		// by the framework when the list tries to clean up memory
 		Bitmap bitmap = Bitmap.createBitmap(item.getDrawingCache());
 		item.setBackgroundColor(defaultBackgroundColor);
-
 		WindowManager.LayoutParams mWindowParams = new WindowManager.LayoutParams();
 		mWindowParams.gravity = Gravity.TOP;
 		mWindowParams.x = 0;
@@ -217,6 +215,7 @@ public class DragNDropListView extends ExpandableListView {
 		}
 		itemView.setVisibility(View.INVISIBLE); // make the item invisible as we
 												// have picked it
+		itemView.setDrawingCacheEnabled(true);
 		defaultBackgroundColor = itemView.getDrawingCacheBackgroundColor(); 
 		itemView.setBackgroundColor(backgroundColor);
 		ImageView iv = (ImageView) itemView
