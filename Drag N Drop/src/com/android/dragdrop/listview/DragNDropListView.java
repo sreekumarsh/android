@@ -25,6 +25,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 
@@ -53,6 +54,7 @@ public class DragNDropListView extends ExpandableListView {
 	private ImageView mDragView;
 	private DragNDropAdapter adapter;
 	private DragNDropListeners listeners;
+	
 
 	public DragNDropListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -79,14 +81,14 @@ public class DragNDropListView extends ExpandableListView {
 		flatPosition = pointToPosition(x, y);
 		dragRatio = getHeight() / screenHeight;
 		packagedPosition = getExpandableListPosition(flatPosition);
-		if (action == MotionEvent.ACTION_DOWN && x < this.getWidth() / 4) {
+		if (action == MotionEvent.ACTION_DOWN && x < 50) {
 			if (getPackedPositionType(packagedPosition) == 1)
 				mDragMode = true;
 		}
-		if (!mDragMode)
+		if (!mDragMode){
 			/** when user action on other areas */
 			return super.onTouchEvent(ev);
-
+		}
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
 			mStartFlatPosition = flatPosition;
@@ -132,7 +134,6 @@ public class DragNDropListView extends ExpandableListView {
 
 			stopDrag(mStartFlatPosition);
 			if (packagedPosition != PACKED_POSITION_VALUE_NULL) {
-				adapter = (DragNDropAdapter) this.getExpandableListAdapter();
 				if(adapter != null){
 					adapter.onDrop(mStartPosition, mEndPosition);
 				}
@@ -200,9 +201,17 @@ public class DragNDropListView extends ExpandableListView {
 		mWindowManager.addView(v, mWindowParams);
 		mDragView = v;
 	}
+	
+	
+
+	@Override
+	public void setAdapter(ExpandableListAdapter adapter) {
+		// TODO Auto-generated method stub
+		super.setAdapter(adapter);
+		this.adapter = (DragNDropAdapter) adapter;
+	}
 
 	private void hideItem(View itemView, int[] position) {
-		adapter = (DragNDropAdapter) this.getExpandableListAdapter();
 		if(adapter != null){
 			adapter.onPick(position);
 		}
