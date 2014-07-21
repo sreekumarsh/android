@@ -59,7 +59,7 @@ public class DragNDropListView extends ExpandableListView {
 		WindowManager wm = (WindowManager) context
 				.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
-		screenHeight = display.getWidth();
+		screenHeight = display.getHeight();
 	}
 
 	public void setSelectedBackgroud(int color) {
