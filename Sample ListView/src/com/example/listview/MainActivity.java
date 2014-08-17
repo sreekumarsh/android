@@ -25,8 +25,8 @@ import com.example.listview.models.FeedResponseModel;
 
 public class MainActivity extends ListActivity implements HandleResponse {
 
-	private ExecutorService executor = Executors.newFixedThreadPool(1);
-	private Handler handler;
+	private static ExecutorService executor = Executors.newFixedThreadPool(5);
+	private Handler handler = new Handler();;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +34,11 @@ public class MainActivity extends ListActivity implements HandleResponse {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
-		handler = new Handler();
+		getListView().setDivider(
+				getResources().getDrawable(R.drawable.gradient_bg));
+		getListView().setDividerHeight(
+				getResources().getDimensionPixelSize(
+						R.dimen.list_divider_height));
 		setActionBar();
 		refreshData();
 	}
@@ -46,7 +50,7 @@ public class MainActivity extends ListActivity implements HandleResponse {
 				.execute(
 						new DataExchangerTask(request, FeedResponseModel.class,
 								handler));
-		//setRefreshing(true);
+		// setRefreshing(true);
 	}
 
 	/**
@@ -54,7 +58,7 @@ public class MainActivity extends ListActivity implements HandleResponse {
 	 * 
 	 * @return ExecutorService
 	 */
-	private ExecutorService getExecutor() {
+	public static ExecutorService getExecutor() {
 		int processorCount = Runtime.getRuntime().availableProcessors();
 		if (executor == null || executor.isShutdown()
 				|| executor.isTerminated()) {
@@ -67,13 +71,17 @@ public class MainActivity extends ListActivity implements HandleResponse {
 	public void handleResponse(BaseResponse responseData) {
 		// TODO Auto-generated method stub
 		// setProgressBarIndeterminate(false);
-		FeedResponseModel feed = (FeedResponseModel) responseData.getData();
-		setTitle(feed.getTitle());
+		if (responseData.getStatusCode() == Constants.HTTP_CODE_SUCCESS
+				&& responseData.getData() != null) {
+			FeedResponseModel feed = (FeedResponseModel) responseData.getData();
+			setTitle(feed.getTitle());
+			getListView().setAdapter(new ListAdapter(this, feed.getRows()));
+		}
+
 	}
-	
-	private void setTitle(String title){
-		TextView txtTitle = (TextView) getWindow().findViewById(
-				R.id.txtTitle);
+
+	private void setTitle(String title) {
+		TextView txtTitle = (TextView) getWindow().findViewById(R.id.txtTitle);
 		txtTitle.setText(title);
 	}
 
@@ -84,7 +92,7 @@ public class MainActivity extends ListActivity implements HandleResponse {
 		ActionBar mActionBar = getActionBar();
 		mActionBar.setDisplayShowHomeEnabled(false);
 		mActionBar.setDisplayShowTitleEnabled(false);
-		
+
 		LayoutInflater mInflater = LayoutInflater.from(this);
 
 		View mCustomView = mInflater.inflate(R.layout.actionbar_layout, null);
@@ -112,7 +120,7 @@ public class MainActivity extends ListActivity implements HandleResponse {
 			animation.setRepeatCount(Animation.INFINITE);
 			animation.setDuration(700);
 			refreshImage.setAnimation(animation);
-		}else{
+		} else {
 			refreshImage.setAnimation(null);
 		}
 	}
