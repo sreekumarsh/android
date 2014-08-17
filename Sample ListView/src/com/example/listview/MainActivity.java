@@ -50,7 +50,7 @@ public class MainActivity extends ListActivity implements HandleResponse {
 				.execute(
 						new DataExchangerTask(request, FeedResponseModel.class,
 								handler));
-		// setRefreshing(true);
+		setRefreshing(true);
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class MainActivity extends ListActivity implements HandleResponse {
 	@Override
 	public void handleResponse(BaseResponse responseData) {
 		// TODO Auto-generated method stub
-		// setProgressBarIndeterminate(false);
+		setRefreshing(false);
 		if (responseData.getStatusCode() == Constants.HTTP_CODE_SUCCESS
 				&& responseData.getData() != null) {
 			FeedResponseModel feed = (FeedResponseModel) responseData.getData();
@@ -115,10 +115,12 @@ public class MainActivity extends ListActivity implements HandleResponse {
 		ImageView refreshImage = (ImageView) getWindow().findViewById(
 				R.id.imgRefresh);
 		if (refresh) {
-			RotateAnimation animation = new RotateAnimation(0f, 350f, 15f, 15f);
+			RotateAnimation animation = new RotateAnimation(360f, 0f,
+					Animation.RELATIVE_TO_SELF, 0.5f,
+					Animation.RELATIVE_TO_SELF, 0.5f);
 			animation.setInterpolator(new LinearInterpolator());
 			animation.setRepeatCount(Animation.INFINITE);
-			animation.setDuration(700);
+			animation.setDuration(900);
 			refreshImage.setAnimation(animation);
 		} else {
 			refreshImage.setAnimation(null);
