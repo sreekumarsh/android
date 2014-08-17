@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/gradient_bg"
+    android:orientation="horizontal"
+    android:padding="5dip" >
+
+    <ImageView
+        android:id="@+id/imgArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dip"
+        android:contentDescription="@null"
+        android:src="@drawable/arrow" />
+
+    <TextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_marginTop="10dip"
+        android:layout_toLeftOf="@id/imgArrow"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/font_blue" />
+
+    <LinearLayout
+        android:id="@+id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtTitle"
+        android:layout_marginRight="5dip"
+        android:layout_toLeftOf="@id/imgArrow"
+        android:background="@drawable/image_frame"
+        android:padding="3dip" >
+
+        <ImageView
+            android:id="@+id/imgPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/image_content" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/txtTitle"
+        android:layout_below="@id/txtTitle"
+        android:layout_marginLeft="10dip"
+        android:layout_marginTop="10dip"
+        android:layout_toLeftOf="@id/thumbnail"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</RelativeLayout>
