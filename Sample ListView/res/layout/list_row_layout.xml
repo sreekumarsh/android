@@ -55,6 +55,7 @@
         android:layout_below="@id/txtTitle"
         android:layout_marginTop="5dip"
         android:layout_toLeftOf="@id/thumbnail"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:textColor="@color/font_black" />
 
 </RelativeLayout>
