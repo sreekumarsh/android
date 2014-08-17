@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/gradient_bg"
-    android:orientation="horizontal"
     android:padding="5dip" >
 
     <ImageView
@@ -12,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="10dip"
+        android:layout_marginRight="3dip"
         android:contentDescription="@null"
         android:src="@drawable/arrow" />
 
@@ -21,10 +20,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="10dip"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="2dip"
         android:layout_marginRight="10dip"
-        android:layout_marginTop="10dip"
-        android:layout_toLeftOf="@id/imgArrow"
+        android:layout_marginTop="3dip"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@color/font_blue" />
 
@@ -32,13 +31,16 @@
         android:id="@+id/thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:layout_below="@id/txtTitle"
-        android:layout_marginRight="5dip"
+        android:layout_marginRight="3dip"
         android:layout_toLeftOf="@id/imgArrow"
         android:background="@drawable/image_frame"
+        android:layout_marginBottom="20dp"
         android:padding="3dip" >
 
         <ImageView
+            
             android:id="@+id/imgPhoto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,12 +49,11 @@
 
     <TextView
         android:id="@+id/txtDescription"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/txtTitle"
         android:layout_below="@id/txtTitle"
-        android:layout_marginLeft="10dip"
-        android:layout_marginTop="10dip"
+        android:layout_marginTop="5dip"
         android:layout_toLeftOf="@id/thumbnail"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
