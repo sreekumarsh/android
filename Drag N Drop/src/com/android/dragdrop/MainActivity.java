@@ -36,7 +36,7 @@ public class MainActivity extends Activity {
 	
 	/**children items with a key and value list */
     private Map<String, ArrayList<String>> children;
-    DragNDropListView eList;
+    DragNDropListView dndListView;
     
     
     /** Called when the activity is first created. */
@@ -45,9 +45,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         getData();
-        eList = (DragNDropListView) findViewById(R.id.list_view_customizer);
-        eList.setDragOnLongPress(true);
-        eList.setAdapter(new DragNDropAdapter(this, new int[]{R.layout.row_item}, new int[]{R.id.txt__customizer_item}, children));
+        dndListView = (DragNDropListView) findViewById(R.id.list_view_customizer);
+        dndListView.setDragOnLongPress(true);
+        dndListView.setAdapter(new DragNDropAdapter(this, new int[]{R.layout.row_item}, new int[]{R.id.txt__customizer_item}, children));
     }
     
     /**
