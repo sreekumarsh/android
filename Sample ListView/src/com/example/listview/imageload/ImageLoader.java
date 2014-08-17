@@ -20,21 +20,21 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.widget.ImageView;
 
-import com.example.listview.ListAdapter.InvalidUrlHandler;
 import com.example.listview.MainActivity;
 
 public class ImageLoader {
 
-	private MemoryCache memoryCache = new MemoryCache();
+	private BitmapCache memoryCache;
 	private FileCache fileCache;
 	private Map<ImageView, String> imageViews = Collections
 			.synchronizedMap(new WeakHashMap<ImageView, String>());
 	private ExecutorService executorService;
-	private static Handler handler = new Handler();// handler to display images
-													// in UI thread
+	// handler to display images in UI thread
+	private static Handler handler = new Handler();
 
 	public ImageLoader(Context context) {
 		fileCache = new FileCache(context);
+		memoryCache = new BitmapCache(Runtime.getRuntime().maxMemory() / 4);
 		executorService = MainActivity.getExecutor();
 	}
 
@@ -185,11 +185,6 @@ public class ImageLoader {
 				return;
 			if (bitmap != null) {
 				photoToLoad.imageView.setImageBitmap(bitmap);
-			} else if (photoToLoad.imageView.getTag() != null
-					&& photoToLoad.imageView.getTag() instanceof InvalidUrlHandler) {
-				//hide the parent thumbnail if url cannot be reached
-				((InvalidUrlHandler) photoToLoad.imageView.getTag())
-						.hideThumbnail();
 			}
 		}
 	}

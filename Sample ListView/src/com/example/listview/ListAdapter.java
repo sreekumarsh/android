@@ -77,6 +77,7 @@ public class ListAdapter extends BaseAdapter {
 		if (items[position].getImageHref() != null
 				&& items[position].getImageHref().length() > 0) {
 			// DisplayImage function from ImageLoader Class
+			holder.thumbnail.setVisibility(View.VISIBLE);
 			imageLoader.DisplayImage(items[position].getImageHref(), image);
 		} else {
 			// hide the layout if image not available
@@ -85,31 +86,18 @@ public class ListAdapter extends BaseAdapter {
 		return view;
 	}
 	
-	/**
-	 * Hide the thumbnail layout if image not found
-	 * @author Sreekumar
-	 *
-	 */
-	public interface InvalidUrlHandler{
-		public void hideThumbnail();
-	}
 
 	/**
 	 * Holder Class to contain inflated xml file elements
 	 * 
 	 * 
 	 */
-	public static class ViewHolder implements InvalidUrlHandler{
+	public static class ViewHolder{
 
 		public TextView title;
 		public TextView description;
 		public ImageView image;
 		public LinearLayout thumbnail;
-		@Override
-		public void hideThumbnail() {
-			// TODO Auto-generated method stub
-			thumbnail.setVisibility(View.GONE);
-		}
 
 	}
 

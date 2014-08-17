@@ -18,6 +18,8 @@ public class Utils {
               os.write(bytes, 0, count);
             }
         }
-        catch(Exception ex){}
+        catch(Exception ex){
+        	ex.printStackTrace();
+        }
     }
 }
