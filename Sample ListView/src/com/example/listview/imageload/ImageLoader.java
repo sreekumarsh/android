@@ -20,6 +20,7 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.widget.ImageView;
 
+import com.example.listview.ListAdapter.InvalidUrlHandler;
 import com.example.listview.MainActivity;
 
 public class ImageLoader {
@@ -45,6 +46,8 @@ public class ImageLoader {
 			imageView.setImageBitmap(bitmap);
 		else {
 			queuePhoto(url, imageView);
+			((InvalidUrlHandler) imageView.getTag())
+			.hideThumbnail();
 		}
 	}
 
@@ -184,7 +187,13 @@ public class ImageLoader {
 			if (imageViewReused(photoToLoad))
 				return;
 			if (bitmap != null) {
+				((InvalidUrlHandler) photoToLoad.imageView.getTag())
+				.showThumbnail();
 				photoToLoad.imageView.setImageBitmap(bitmap);
+			} else {
+				// hide the parent thumbnail if url cannot be reached
+				((InvalidUrlHandler) photoToLoad.imageView.getTag())
+						.hideThumbnail();
 			}
 		}
 	}
