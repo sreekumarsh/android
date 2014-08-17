@@ -19,7 +19,9 @@ package com.android.dragdrop.listview;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
+import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -40,6 +42,7 @@ import com.android.dragdrop.R;
  */
 public class DragNDropListView extends ExpandableListView {
 
+	private static final String TAG = "DragNDropListView";
 	private boolean mDragMode;
 	private boolean limitHorizontalDrag = true;
 	private int[] mStartPosition = new int[2];
@@ -54,7 +57,10 @@ public class DragNDropListView extends ExpandableListView {
 	private ImageView mDragView;
 	private DragNDropAdapter adapter;
 	private DragNDropListeners listeners;
-	
+	private int dragOffset = 50;
+	private boolean dragOnLongPress;
+	private boolean pressedItem;
+	private Handler handler = new Handler();
 
 	public DragNDropListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -69,25 +75,54 @@ public class DragNDropListView extends ExpandableListView {
 	}
 
 	@Override
-	public boolean onTouchEvent(MotionEvent ev) {
-		final int action = ev.getAction();
-		final int x = (int) ev.getX();
-		final int y = (int) ev.getY();
+	public boolean onTouchEvent(MotionEvent event) {
+		return touchHandler(event);
+	}
+
+	private boolean touchHandler(final MotionEvent event) {
+		final int action = event.getAction();
+		final int x = (int) event.getX();
+		final int y = (int) event.getY();
 		if (prevY < 0) {
 			prevY = y;
 		}
-		long packagedPosition = 0;
-		int flatPosition = 0;
-		flatPosition = pointToPosition(x, y);
+		Log.d(TAG, "Motion event " + event.getAction());
+		int flatPosition = pointToPosition(x, y);
 		dragRatio = getHeight() / screenHeight;
-		packagedPosition = getExpandableListPosition(flatPosition);
-		if (action == MotionEvent.ACTION_DOWN && x < 50) {
-			if (getPackedPositionType(packagedPosition) == 1)
+		long packagedPosition = getExpandableListPosition(flatPosition);
+
+		if (action == MotionEvent.ACTION_DOWN
+				&& getPackedPositionType(packagedPosition) == 1) {
+			if (dragOnLongPress) {
+				if (pressedItem) {
+					mDragMode = true;
+					pressedItem = false;
+				} else {
+					pressedItem = true;
+					Runnable r = new Runnable() {
+						@Override
+						public void run() {
+							// y coordinate is changing for no reason ??
+							event.setLocation(x, y);
+							touchHandler(event);
+						}
+					};
+					handler.postDelayed(r, 200);
+					return true;
+				}
+			} else if (x < dragOffset) {
 				mDragMode = true;
+			}
 		}
-		if (!mDragMode){
+
+		if (!mDragMode) {
 			/** when user action on other areas */
-			return super.onTouchEvent(ev);
+			if ((pressedItem && Math.abs(prevY - y) > 30)
+					|| event.getAction() != MotionEvent.ACTION_MOVE) {
+				pressedItem = false;
+				handler.removeCallbacksAndMessages(null);
+			}
+			return super.onTouchEvent(event);
 		}
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
@@ -98,9 +133,9 @@ public class DragNDropListView extends ExpandableListView {
 
 				int mItemPosition = flatPosition - getFirstVisiblePosition();
 				mDragPointOffset = y - getChildAt(mItemPosition).getTop();
-				mDragPointOffset -= ((int) ev.getRawY()) - y;
+				mDragPointOffset -= ((int) event.getRawY()) - y;
 				startDrag(mItemPosition, y);
-				if(listeners != null){
+				if (listeners != null) {
 					listeners.onPick(mStartPosition);
 				}
 				drag(x, y);
@@ -115,8 +150,8 @@ public class DragNDropListView extends ExpandableListView {
 				smoothScrollBy(speed, 1);
 			}
 			drag(x, y);// replace 0 with x if desired
-			if(listeners != null){
-				listeners.onDrag(x,y);
+			if (listeners != null) {
+				listeners.onDrag(x, y);
 			}
 			break;
 		case MotionEvent.ACTION_CANCEL:
@@ -134,10 +169,10 @@ public class DragNDropListView extends ExpandableListView {
 
 			stopDrag(mStartFlatPosition);
 			if (packagedPosition != PACKED_POSITION_VALUE_NULL) {
-				if(adapter != null){
+				if (adapter != null) {
 					adapter.onDrop(mStartPosition, mEndPosition);
 				}
-				if(listeners != null){
+				if (listeners != null) {
 					listeners.onDrop(mStartPosition, mEndPosition);
 				}
 			}
@@ -152,10 +187,17 @@ public class DragNDropListView extends ExpandableListView {
 		if (mDragView != null) {
 			WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) mDragView
 					.getLayoutParams();
-			if (!limitHorizontalDrag) {//no need to move if horizontal drag is limited
+			if (!limitHorizontalDrag) {// no need to move if horizontal drag is
+										// limited
 				layoutParams.x = x;
 			}
-			layoutParams.y = y - mDragPointOffset;
+			if (dragOnLongPress) {
+				// to show that item is detached from the list
+				layoutParams.y = y - mDragPointOffset - 20;
+			} else {
+				layoutParams.y = y - mDragPointOffset;
+			}
+
 			WindowManager mWindowManager = (WindowManager) getContext()
 					.getSystemService(Context.WINDOW_SERVICE);
 			mWindowManager.updateViewLayout(mDragView, layoutParams);
@@ -199,8 +241,6 @@ public class DragNDropListView extends ExpandableListView {
 		mWindowManager.addView(v, mWindowParams);
 		mDragView = v;
 	}
-	
-	
 
 	@Override
 	public void setAdapter(ExpandableListAdapter adapter) {
@@ -210,17 +250,18 @@ public class DragNDropListView extends ExpandableListView {
 	}
 
 	private void hideItem(View itemView, int[] position) {
-		if(adapter != null){
+		if (adapter != null) {
 			adapter.onPick(position);
 		}
 		itemView.setVisibility(View.INVISIBLE); // make the item invisible as we
 												// have picked it
 		itemView.setDrawingCacheEnabled(true);
-		defaultBackgroundColor = itemView.getDrawingCacheBackgroundColor(); 
+		defaultBackgroundColor = itemView.getDrawingCacheBackgroundColor();
 		itemView.setBackgroundColor(backgroundColor);
 		ImageView iv = (ImageView) itemView
 				.findViewById(R.id.move_icon_customizer_item);
-		if (iv != null) iv.setVisibility(View.INVISIBLE);
+		if (iv != null)
+			iv.setVisibility(View.INVISIBLE);
 	}
 
 	public void showItem(View itemView) {
@@ -247,7 +288,7 @@ public class DragNDropListView extends ExpandableListView {
 		int wantedChild = itemIndex - firstPosition;
 		if (mDragView != null) {
 			if (wantedChild < 0 || wantedChild >= getChildCount()) {
-				//no need to do anything
+				// no need to do anything
 			} else {
 				showItem(getChildAt(wantedChild));
 			}
@@ -283,10 +324,41 @@ public class DragNDropListView extends ExpandableListView {
 	}
 
 	/**
-	 * @param listeners the listeners to set
+	 * @param listeners
+	 *            the listeners to set
 	 */
 	public void setListeners(DragNDropListeners listeners) {
 		this.listeners = listeners;
+	}
+
+	/**
+	 * @return the dragOffset
+	 */
+	public int getDragOffset() {
+		return dragOffset;
+	}
+
+	/**
+	 * @param dragOffset
+	 *            the dragOffset to set
+	 */
+	public void setDragOffset(int dragOffset) {
+		this.dragOffset = dragOffset;
+	}
+
+	public boolean isDragOnLongPress() {
+		return dragOnLongPress;
+	}
+
+	/**
+	 * set this to drag an item by long press
+	 * @param flag
+	 */
+	public void setDragOnLongPress(boolean flag) {
+		dragOnLongPress = flag;
+		if (flag) {
+
+		}
 	}
 
 }

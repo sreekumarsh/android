@@ -46,6 +46,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
         getData();
         eList = (DragNDropListView) findViewById(R.id.list_view_customizer);
+        eList.setDragOnLongPress(true);
         eList.setAdapter(new DragNDropAdapter(this, new int[]{R.layout.row_item}, new int[]{R.id.txt__customizer_item}, children));
     }
     
