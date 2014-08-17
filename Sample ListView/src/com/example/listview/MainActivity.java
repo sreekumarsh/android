@@ -110,7 +110,10 @@ public class MainActivity extends ListActivity implements HandleResponse {
 		mActionBar.setCustomView(mCustomView);
 		mActionBar.setDisplayShowCustomEnabled(true);
 	}
-
+	/**
+	 * start or stop rotating the refresh icon 
+	 * @param refresh - boolean; start/stop
+	 */
 	private void setRefreshing(boolean refresh) {
 		ImageView refreshImage = (ImageView) getWindow().findViewById(
 				R.id.imgRefresh);
