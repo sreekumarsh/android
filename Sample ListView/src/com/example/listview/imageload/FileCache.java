@@ -18,7 +18,7 @@ public class FileCache {
     }
     
     public File getFile(String url){
-        //I identify images by hashcode.
+        // identify images by hashcode.
         String filename=String.valueOf(url.hashCode());
         //String filename = URLEncoder.encode(url);
         File f = new File(cacheDir, filename);
