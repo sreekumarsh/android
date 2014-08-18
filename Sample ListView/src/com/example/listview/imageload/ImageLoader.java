@@ -35,6 +35,7 @@ public class ImageLoader {
 
 	public ImageLoader(Context context) {
 		fileCache = new FileCache(context);
+		//use 25% of available heap
 		memoryCache = new BitmapCache(Runtime.getRuntime().maxMemory() / 4);
 		executorService = MainActivity.getExecutor();
 	}
@@ -165,7 +166,9 @@ public class ImageLoader {
 			}
 		}
 	}
-
+	/**
+	 * No need to update if imageView is reused
+	 * */
 	boolean imageViewReused(PhotoToLoad photoToLoad) {
 		String tag = imageViews.get(photoToLoad.imageView);
 		if (tag == null || !tag.equals(photoToLoad.url))
