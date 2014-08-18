@@ -35,7 +35,7 @@ public class MainActivity extends ListActivity implements HandleResponse {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
 		getListView().setDivider(
-				getResources().getDrawable(R.drawable.gradient_bg));
+				getResources().getDrawable(R.drawable.divider_list));
 		getListView().setDividerHeight(
 				getResources().getDimensionPixelSize(
 						R.dimen.list_divider_height));
