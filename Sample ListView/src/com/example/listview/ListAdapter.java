@@ -101,12 +101,12 @@ public class ListAdapter extends BaseAdapter {
 	 * 
 	 * 
 	 */
-	public static class ViewHolder implements InvalidUrlHandler{
+	private class ViewHolder implements InvalidUrlHandler{
 
-		public TextView title;
-		public TextView description;
-		public ImageView image;
-		public LinearLayout thumbnail;
+		private TextView title;
+		private TextView description;
+		private ImageView image;
+		private LinearLayout thumbnail;
 		@Override
 		public void hideThumbnail() {
 			// TODO Auto-generated method stub

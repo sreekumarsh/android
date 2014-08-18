@@ -12,11 +12,24 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+/**
+ * Defines various methods to exchange data with server; Eg: GET, POST etc
+ * 
+ * @author Sreekumar
+ * 
+ */
 public class DataExchanger {
 
-	
-	public String exchangeStringGET(String url)
-			throws ClientProtocolException, Exception {
+	/**
+	 * Perform a GET request and returns the string response
+	 * 
+	 * @param url
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws Exception
+	 */
+	public String exchangeStringGET(String url) throws ClientProtocolException,
+			IOException {
 
 		InputStream inputStream = null;
 		StringBuilder stringBuffer = new StringBuilder();
@@ -33,8 +46,8 @@ public class DataExchanger {
 		inputStream = httpEntity.getContent();
 		if (inputStream == null)
 			return null;
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream,
-				"UTF-8"), 8);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				inputStream, "UTF-8"), 8);
 
 		String line = null;
 		while ((line = reader.readLine()) != null) {

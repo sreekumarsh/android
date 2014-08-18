@@ -35,7 +35,7 @@ public class MainActivity extends ListActivity implements HandleResponse {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
 		getListView().setDivider(
-				getResources().getDrawable(R.drawable.divider_list));
+				getResources().getDrawable(R.color.divider_list));
 		getListView().setDividerHeight(
 				getResources().getDimensionPixelSize(
 						R.dimen.list_divider_height));
@@ -79,7 +79,10 @@ public class MainActivity extends ListActivity implements HandleResponse {
 		}
 
 	}
-
+	/**
+	 * Set the title of the action bar
+	 * @param title - String
+	 */
 	private void setTitle(String title) {
 		TextView txtTitle = (TextView) getWindow().findViewById(R.id.txtTitle);
 		txtTitle.setText(title);

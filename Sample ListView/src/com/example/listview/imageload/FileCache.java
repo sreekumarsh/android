@@ -2,7 +2,11 @@ package com.example.listview.imageload;
 
 import java.io.File;
 import android.content.Context;
-
+/**
+ * Cache bitmap files in the SD card
+ * @author Sreekumar
+ *
+ */
 public class FileCache {
     
     private File cacheDir;

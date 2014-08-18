@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 
 public class BitmapCache implements MemCache<String, Bitmap> {
 
+	/** {@code LinkedHashMap} is used to maintain the accessOrder of cached items */
 	private final LinkedHashMap<String, Bitmap> map;
 
 	private final long maxSize;
@@ -21,6 +22,7 @@ public class BitmapCache implements MemCache<String, Bitmap> {
 			throw new IllegalArgumentException("maxSize <= 0");
 		}
 		this.maxSize = maxSize;
+		/** set access order true to make the ordering based on recently accessed**/
 		this.map = new LinkedHashMap<String, Bitmap>(0, 0.75f, true);
 	}
 

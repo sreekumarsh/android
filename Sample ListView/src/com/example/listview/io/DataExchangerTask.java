@@ -23,6 +23,11 @@ public class DataExchangerTask implements Runnable {
 		this.respDataClass = respDataClass;
 	}
 
+	/**
+	 * Send the response to UI thread
+	 * 
+	 * @param response
+	 */
 	private void doResultCallback(final BaseResponse response) {
 		try {
 			handler.post(new Runnable() {
@@ -64,7 +69,13 @@ public class DataExchangerTask implements Runnable {
 			responseData.setStatusCode(Constants.HTTP_CODE_NETWORK_ERROR);
 			responseData.setStatusMessage(e.getLocalizedMessage());
 			e.printStackTrace();
-		} catch (Throwable e) {
+		} catch (NullPointerException e) {
+			// unknown error
+			responseData.setStatusCode(Constants.HTTP_CODE_UNKNOWN);
+			responseData.setStatusMessage(e.getLocalizedMessage());
+			e.printStackTrace();
+
+		} catch (IllegalArgumentException e) {
 			// unknown error
 			responseData.setStatusCode(Constants.HTTP_CODE_UNKNOWN);
 			responseData.setStatusMessage(e.getLocalizedMessage());
