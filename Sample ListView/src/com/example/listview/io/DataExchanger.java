@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -46,13 +47,13 @@ public class DataExchanger {
 		inputStream = httpEntity.getContent();
 		if (inputStream == null)
 			return null;
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				inputStream, "UTF-8"), 8);
-
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-			stringBuffer.append(line + "\n");
+		Reader in = new BufferedReader(new InputStreamReader(inputStream,
+				"ISO-8859-1"));
+		int ch;
+		while ((ch = in.read()) > -1) {
+			stringBuffer.append((char) ch);
 		}
+		in.close();
 		inputStream.close();
 		return stringBuffer.toString();
 	}

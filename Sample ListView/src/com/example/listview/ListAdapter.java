@@ -64,14 +64,17 @@ public class ListAdapter extends BaseAdapter {
 					.findViewById(R.id.txtDescription);
 			holder.image = (ImageView) view.findViewById(R.id.imgPhoto);
 			holder.thumbnail = (LinearLayout) view.findViewById(R.id.thumbnail);
-
 			/************ Set holder with LayoutInflater ************/
 			view.setTag(holder);
 		} else {
 			holder = (ViewHolder) view.getTag();
 		}
 		holder.title.setText(items[position].getTitle());
-		holder.description.setText(items[position].getDescription());
+
+		if (items[position].getDescription() != null
+				&& items[position].getDescription().length() > 0) {
+			holder.description.setText(items[position].getDescription());
+		}
 		ImageView image = holder.image;
 		image.setTag(holder);
 		if (items[position].getImageHref() != null
@@ -85,14 +88,16 @@ public class ListAdapter extends BaseAdapter {
 		}
 		return view;
 	}
-	
+
 	/**
 	 * Hide the thumbnail layout if image not found
+	 * 
 	 * @author Sreekumar
-	 *
+	 * 
 	 */
-	public interface InvalidUrlHandler{
+	public interface InvalidUrlHandler {
 		public void hideThumbnail();
+
 		public void showThumbnail();
 	}
 
@@ -101,17 +106,19 @@ public class ListAdapter extends BaseAdapter {
 	 * 
 	 * 
 	 */
-	private class ViewHolder implements InvalidUrlHandler{
+	private class ViewHolder implements InvalidUrlHandler {
 
 		private TextView title;
 		private TextView description;
 		private ImageView image;
 		private LinearLayout thumbnail;
+
 		@Override
 		public void hideThumbnail() {
 			// TODO Auto-generated method stub
 			thumbnail.setVisibility(View.GONE);
 		}
+
 		@Override
 		public void showThumbnail() {
 			// TODO Auto-generated method stub
