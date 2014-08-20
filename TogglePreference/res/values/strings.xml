@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TogglePreference</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="selected_camera_key">selected_camera</string>
+    <string name="general">General</string>
+	<string name="camera">Camera</string>
+	<string name="select_camera">Chose the camera to take picture</string>
+	<string name="front">Front</string>
+	<string name="rear">Rear</string>
+	<string name="toast_text">You selected %s camera</string>
+
+</resources>

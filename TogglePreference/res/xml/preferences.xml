@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/general" >
+        <com.example.preference.TogglePreference
+            android:defaultValue="true"
+            android:icon="@drawable/camera"
+            android:key="@string/selected_camera_key"
+            android:summary="@string/select_camera"
+            android:textOn="@string/front"
+            android:textOff="@string/rear"
+            android:title="@string/camera" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
+  
