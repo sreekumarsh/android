@@ -12,3 +12,9 @@ dndListView.setAdapter(new DragNDropAdapter(this, new int[]{R.layout.row_item}, 
 ```
 
 Check the MainActivity.java for details.
+
+<br><br>
+<img style="float: left" src="http://sreekumar.sh/share/images/dragNdrop1.png" />
+<img style="float: left" src="http://sreekumar.sh/share/images/dragNdrop2.png" />
+<img style="float: left" src="http://sreekumar.sh/share/images/dragNdrop3.png" />
+<img style="float: left" src="http://sreekumar.sh/share/images/dragNdrop4.png" />
