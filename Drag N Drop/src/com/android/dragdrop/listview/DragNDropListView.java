@@ -352,6 +352,7 @@ public class DragNDropListView extends ExpandableListView {
 
 	/**
 	 * set this to drag an item by long press
+	 * 
 	 * @param flag
 	 */
 	public void setDragOnLongPress(boolean flag) {
