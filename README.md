@@ -18,5 +18,8 @@ SimpleListView.
 
 Simple listView done in the most efficient way to load items based on json data, Images in each rown is updated only when   the view is shown, uses cache to hold the images.
 
+TogglePreference
+----------------
 
+Custom preference component with a toggle button
 
