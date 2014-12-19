@@ -9,6 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:contentDescription="@null"
         android:src="@drawable/icmpmove" >
     </ImageView>
 
@@ -17,8 +18,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:text="@strings/blank"
-        android:textSize="36dp" >
+        android:text="@string/blank"
+        android:textSize="30sp" >
     </TextView>
 
 </LinearLayout>
