@@ -6,6 +6,8 @@ Android projects with reusable components which will be useful in your applicati
 [DragNDrop ExpandableListView.]
 --------------------------------
 
+[![DragNDrop ExpandableListView.](https://j.gifs.com/mLPgPq.gif)](https://www.youtube.com/watch?v=WE-XAj5eI-A)
+
 Reorder items in an expandable listview by dragging and dropping, Yes you can drag between groups. Supports long press to  drag, try it yourself.
 
 [Momentage.]
