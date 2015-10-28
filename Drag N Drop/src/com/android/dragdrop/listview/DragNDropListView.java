@@ -268,6 +268,7 @@ public class DragNDropListView extends ExpandableListView {
 		if (itemView != null) {
 			itemView.setVisibility(View.VISIBLE);
 			itemView.setBackgroundColor(defaultBackgroundColor);
+			itemView.setDrawingCacheEnabled(false);
 			ImageView iv = (ImageView) itemView
 					.findViewById(R.id.move_icon_customizer_item);
 			if (iv != null)
